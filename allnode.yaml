@@ -1,0 +1,39 @@
+---
+- name: Creating AutoscalingGroup
+  hosts: nodes
+  tasks: 
+    - ec2_metadata_facts:
+    - hostname:
+        name: "{{ ansible_ec2_public_hostname }}"
+    - name: install ntpdate
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - centos-release-openshift-origin310
+        - epel-release
+        - docker
+        - git
+        - pyOpenSSL
+    - replace:
+        path: /etc/sysconfig/docker-storage
+        regexp: 'overlay2'
+        replace: 'devicemapper'
+        backup: no
+- name: Master naode
+  hosts: masters
+  tasks: 
+    - name: example copying file with owner and permissions
+      copy:
+        src: mykey.pem
+        dest: /opt/mykey.pem
+        mode: 0600
+    - name: example copying file with owner and permissions
+      copy:
+        src: hostfile
+        dest: /opt/hostfile
+    - name: install ntpdate
+      package:
+        name: openshift-ansible
+        state: present
+   

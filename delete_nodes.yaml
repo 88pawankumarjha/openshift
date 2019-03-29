@@ -1,0 +1,16 @@
+---
+ - name: Creating AutoscalingGroup
+   hosts: localhost
+   tasks:
+     - name: create key pair using key_material obtained using 'file' lookup plugin
+       ec2_key:
+         name: openshift_keypair
+         state: absent
+     - cloudformation:
+           region: "us-east-1"
+           state: absent
+           stack_name: "openshift-nodes"
+           template: "openshift-node-deploy-template.yaml"
+           template_parameters:
+             AvailabilityZone: "us-east-1a"
+             KeyName: "openshift_keypair"
